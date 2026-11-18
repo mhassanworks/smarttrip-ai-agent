@@ -1,214 +1,196 @@
-# TripSync AI — Multi-Agent Travel Planner
+# SmartTrip AI — Autonomous Multi-Agent Travel Planning & Negotiation System
 
-Given a budget, destination, dates, and interests, TripSync builds a complete
-itinerary through specialized sub-agents (flights, hotels, activities,
-pricing) coordinated by a LangGraph orchestrator — with real cross-agent
-budget negotiation when the initial plan doesn't fit.
+[![Python Tests](https://img.shields.io/badge/pytest-149%20passed-emerald.svg)](tests/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-2.0.0-009688.svg)](api/main.py)
+[![LangGraph](https://img.shields.io/badge/LangGraph-StateGraph-blue.svg)](graph/)
+[![React](https://img.shields.io/badge/React-19-61dafb.svg)](frontend/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-v3.4-38bdf8.svg)](frontend/)
+[![License](https://img.shields.io/badge/License-MIT-purple.svg)](LICENSE)
 
-## Project structure
+**SmartTrip AI** is an enterprise-grade autonomous multi-agent platform designed for intelligent travel planning, real-time budget negotiation, multi-attribute decision theory optimization, and cryptographic verification.
 
-```
-multi-agent-ai-travel-planner/
-├── schemas/          Pydantic models shared across agents and the API
-│   └── messages.py
-├── graph/             LangGraph orchestration
-│   ├── state.py           shared state definition + initial state builder
-│   ├── flight_agent.py    flight search (mocked data)
-│   ├── hotel_agent.py     hotel search (mocked data)
-│   ├── activity_agent.py  activity suggestions (mocked data)
-│   ├── pricing_agent.py   budget evaluation + reallocation + routing logic
-│   ├── synthesis.py       assembles the final Itinerary
-│   └── build.py           wires all nodes into the compiled StateGraph
-├── api/
-│   └── main.py         FastAPI app, POST /plan-trip streams progress via SSE
-├── clients/            Real API clients (own service, Amadeus, Google Places)
-│   ├── own_flight_data_client.py  Client for our self-hosted flight data service
-│   ├── own_hotel_data_client.py   Client for our self-hosted hotel data service
-│   ├── amadeus_client.py       OAuth2 token caching, IATA resolution, flight/hotel search
-│   └── google_places_client.py Text search for activities
-├── cache/              Caching layer for all live API responses
-│   ├── factory.py               Picks Redis or in-memory, falls back gracefully
-│   ├── redis_cache.py / memory_cache.py
-│   └── keys.py                  Deterministic cache key builder
-├── data_service/       Self-hosted flight + hotel + activity data microservice
-│   ├── app.py                  FastAPI service sampling from real fare/pricing statistics
-│   └── seed_data/               Aggregated real flight fares, hotel bookings, activity fees
-├── scripts/
-│   ├── build_flight_seed.py    Regenerates flight seed data from the raw Kaggle CSV
-│   └── build_hotel_seed.py     Regenerates hotel seed data from the raw AtliQ CSVs
-├── config.py           Settings (API credentials, all optional — mock fallback if unset)
-├── tests/              126 tests across schemas, cache, clients, data service, agents, graph, and API
-├── frontend/            React + TypeScript + Tailwind UI (design via Stitch)
-├── requirements.txt
-└── README.md            (you are here)
-```
+Built on **LangGraph, FastAPI, and React**, the system transforms traditional linear travel planning into an autonomous society of specialized agents that deliberate, bid, exchange framed TCP socket messages, dynamically replan around environmental shocks (BDI), and enforce HMAC-SHA256 zero-trust security.
 
-## How it works
+---
+
+## 1. Complete Assignment Implementation Mapping
+
+All 10 required academic and architectural assignments are fully implemented, tested, and integrated into the live interactive dashboard:
+
+| # | Assignment Module | Core Implementation | Key Endpoints | Documentation & Tests |
+| :-: | :--- | :--- | :--- | :--- |
+| **1** | **PEAS & Environment** | 8 Agent Personas, PEAS Matrices, Russell & Norvig Taxonomy, Agent vs. OOP comparison | `GET /api/peas` | [`docs/PEAS_AND_ENVIRONMENT.md`](docs/PEAS_AND_ENVIRONMENT.md)<br>`tests/test_smarttrip_modules.py::test_assignment_1_*` |
+| **2** | **Rule Engine** | Forward-chaining Condition-Action rule heuristics for traveler personas, budget shifts, and destination suitability | `POST /api/rules/evaluate` | [`smarttrip/rule_engine.py`](smarttrip/rule_engine.py)<br>`tests/test_smarttrip_modules.py::test_assignment_2_*` |
+| **3** | **Concurrency & Latency** | Multi-threaded background telemetry workers (`threading.Thread`, `queue.Queue`, mutex locks) with microsecond latency logging | `GET /api/concurrency/status`<br>`POST /api/concurrency/trigger` | [`smarttrip/concurrency.py`](smarttrip/concurrency.py)<br>`tests/test_smarttrip_modules.py::test_assignment_3_*` |
+| **4** | **TCP Socket Communication** | Low-level TCP client-server exchange (Agent A $\leftrightarrow$ Agent B) with serialized newline-framed JSON protocols and latency metrics | `POST /api/socket/run-exchange` | [`smarttrip/socket_comm.py`](smarttrip/socket_comm.py)<br>`tests/test_smarttrip_modules.py::test_assignment_4_*` |
+| **5** | **Multi-Agent Negotiation** | Multi-turn proposal & bidding protocol (Flight, Hotel, Activity, Budget Arbiter) with concessions and consensus | `POST /api/negotiation/run` | [`smarttrip/negotiation.py`](smarttrip/negotiation.py)<br>`tests/test_smarttrip_modules.py::test_assignment_5_*` |
+| **6** | **Utility Optimization** | Multi-Attribute Utility Theory (MAUT): $U(c) = \sum w_i U_i(c)$ evaluating and ranking 10 diverse configurations | `POST /api/utility/optimize` | [`smarttrip/utility_optimizer.py`](smarttrip/utility_optimizer.py)<br>`tests/test_smarttrip_modules.py::test_assignment_6_*` |
+| **7** | **BDI Architecture** | Formal Beliefs, Desires, Intentions architecture with dynamic replanning upon price surges (+65%) and storm events | `POST /api/bdi/replan` | [`smarttrip/bdi_agent.py`](smarttrip/bdi_agent.py)<br>`tests/test_smarttrip_modules.py::test_assignment_7_*` |
+| **8** | **Knowledge & Weather API** | Structured JSON destination ontology + live Open-Meteo REST API forecast integration with high-fidelity fallback | `GET /api/knowledge/destination/{city}`<br>`GET /api/weather/{city}` | [`smarttrip/knowledge_weather.py`](smarttrip/knowledge_weather.py)<br>`tests/test_smarttrip_modules.py::test_assignment_8_*` |
+| **9** | **Cryptographic Security** | Zero-trust HMAC-SHA256 signature generation, tamper detection, sender whitelisting, and replay prevention | `GET /api/security/audit`<br>`POST /api/security/verify` | [`smarttrip/security.py`](smarttrip/security.py)<br>`tests/test_smarttrip_modules.py::test_assignment_9_*` |
+| **10** | **Capstone Integration** | Unified end-to-end execution pipeline uniting all 9 subsystems, live SSE streaming, and SQLite persistence | `POST /api/demo/run`<br>`GET /api/demo/history`<br>`POST /plan-trip` | [`smarttrip/capstone.py`](smarttrip/capstone.py)<br>`tests/test_smarttrip_modules.py::test_assignment_10_*` |
+
+---
+
+## 2. System Architecture
 
 ```mermaid
 graph TD
-    Client([Client Request]) --> InitState[Initialize State]
-    InitState --> FA[Flight Agent]
-    InitState --> HA[Hotel Agent]
-    InitState --> AA[Activity Agent]
+    Client([User / Web Dashboard]) --> SSE[POST /plan-trip & /api/demo/run]
     
-    subgraph "Data Retrieval & Caching"
-        FA -.-> Cache[(Cache)]
-        HA -.-> Cache
-        AA -.-> Cache
-        Cache -. Miss .-> APIs[Live APIs: Amadeus / Google / Own Service]
+    subgraph "Knowledge & Ingestion"
+        RE[Condition-Action Rule Engine]
+        KB[(Destination Knowledge Base)]
+        WX[Open-Meteo Weather API]
     end
     
-    FA --> PA{Pricing Agent}
-    HA --> PA
-    AA --> PA
+    subgraph "LangGraph & Autonomous MAS Core"
+        FA[Flight Agent]
+        HA[Hotel Agent]
+        AA[Activity Agent]
+        PA{Budget Arbiter}
+        BDI[BDI Dynamic Planner]
+        TCP[TCP Socket Broker A<->B]
+    end
     
-    PA -->|Cost Exceeds Budget| Realloc[Reallocate Budget]
-    Realloc -->|Identify Variance & Shrink Ceiling| Cond{Conditional Routing}
+    subgraph "Decision & Security Subsystems"
+        MAUT[MAUT Utility Optimizer: 10 Configs]
+        SEC[HMAC-SHA256 Security Verifier]
+        BG[Concurrent Worker Telemetry Pool]
+    end
     
-    Cond -.->|Re-invoke Flight| FA
-    Cond -.->|Re-invoke Hotel| HA
-    Cond -.->|Re-invoke Activity| AA
+    SSE --> RE
+    RE --> FA & HA & AA
+    KB & WX --> AA
+    FA & HA & AA --> PA
     
-    PA -->|Budget Met OR Max Rounds| Synth[Synthesize Itinerary]
-    Synth --> DB[(Save to SQLite Database)]
-    DB --> End([SSE Stream: itinerary_ready])
+    PA -->|Budget Overrun| BDI
+    BDI -->|Replan Intentions| TCP
+    TCP --> MAUT
+    MAUT --> SEC
+    SEC --> DB[(SQLite Database: tripsync.db)]
+    DB --> Output([Final Synthesized Itinerary])
 ```
 
-1. `POST /plan-trip` kicks off a LangGraph run: `flight_agent`, `hotel_agent`,
-   and `activity_agent` execute in parallel.
-2. `pricing_agent` evaluates the combined cost. If over budget, it flags the
-   single category with the largest budget variance for reallocation.
-3. `reallocate` shrinks that category's ceiling and re-invokes only that one
-   agent — not a full re-run — then loops back to `pricing_agent`.
-4. This repeats up to `max_negotiation_rounds` (default 3), then `synthesize`
-   assembles the final itinerary, marking it `best_effort` if still over
-   budget.
-5. Progress streams to the frontend as Server-Sent Events the whole way, so
-   the UI can show each agent moving through
-   `waiting → searching → found / reallocating` live.
-6. Upon completion, the finalized itinerary is persisted to a local SQLite database (`tripsync.db`) and its ID is returned in the `itinerary_ready` event, allowing users to revisit saved trips in the UI.
+---
 
-## Running the backend
+## 3. Quickstart & Local Setup
 
+### Prerequisites
+- Python 3.10+
+- Node.js 18+ and npm
+
+### 1. Backend Setup
 ```bash
-pip install -r requirements.txt --break-system-packages
-uvicorn api.main:app --reload
+# Create and activate virtual environment
+python3 -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run full test suite (149 tests)
+pytest tests/
+
+# Launch FastAPI development server
+uvicorn api.main:app --reload --port 8000
 ```
 
-Runs on `http://localhost:8000`. Health check: `GET /health`.
+Backend endpoints will be available at `http://localhost:8000`:
+- Interactive Swagger API docs: `http://localhost:8000/docs`
+- Health check: `http://localhost:8000/health`
+- Capstone Demo Execution: `http://localhost:8000/api/demo/run`
 
-### Using real flight/hotel/activity data (optional)
-
-By default, every agent runs entirely on mock data — no setup needed,
-works out of the box. There are three tiers of real data, from easiest
-to hardest to set up:
-
-**1. Own data service — recommended, no signup needed.** Real 2022
-Indian domestic flight fares (Kaggle dataset), real AtliQ Grands hotel
-booking prices/names/ratings, and real hand-curated ASI/museum entry
-fees for major monuments — all self-hosted, no rate limits. See
-`data_service/README.md`.
-
+### 2. Frontend Setup
 ```bash
-uvicorn data_service.app:app --port 8100 --reload   # separate terminal
-```
-
-Then in `.env`:
-```
-OWN_FLIGHT_SERVICE_URL=http://localhost:8100
-OWN_HOTEL_SERVICE_URL=http://localhost:8100
-OWN_ACTIVITY_SERVICE_URL=http://localhost:8100
-```
-
-Flights cover 6 metro cities, hotels cover 4, activities cover 4 cities
-but only `history`/`nature` categories (no fee-gated beaches/nightlife/
-food data exists) — falls through to Amadeus/Google Places or mock
-automatically for anything outside that coverage.
-
-**2. Amadeus / Google Places — broader coverage, needs free signup.**
-
-```bash
-cp .env.example .env
-```
-
-Then fill in:
-- `AMADEUS_CLIENT_ID` / `AMADEUS_CLIENT_SECRET` — free test credentials
-  at https://developers.amadeus.com/self-service. Powers flight and
-  hotel search (`clients/amadeus_client.py`).
-- `GOOGLE_PLACES_API_KEY` — from Google Cloud Console with the Places
-  API enabled. Powers activity suggestions (`clients/google_places_client.py`).
-
-Each agent tries live sources in priority order (own service → Amadeus/
-Google Places → mock) and falls back automatically on any failure
-(missing credentials, city not found, zero results, no route/city/
-category coverage, network error, rate limit). Check the `data_source`
-field in each agent's `AgentMessage.payload` (`"own_service"` /
-`"amadeus"` / `"google_places"` / `"mock"`) to see which path was
-actually used for a given run.
-
-**Known limitations of the live mapping** (see `data_service/README.md`
-for full detail):
-- The own data service samples from real *statistics* for flights/
-  hotels (not live prices), and real *fixed fees* for activities (hand-
-  curated, not bulk-sourced — see the source note in
-  `activity_fees.json`). Coverage: flights 6 metros, hotels 4, activities
-  4 cities but only `history`/`nature` categories.
-- Amadeus's hotel-offers endpoint doesn't return neighborhood/rating
-  data on the same call — would need a second call to the Hotel
-  Content API for full parity with the mock data's `area`/`rating` fields.
-- Google Places has no price or visit-duration field, so activity
-  costs are estimated from `price_level` (0–4) via a rough heuristic,
-  and duration defaults to 2 hours. Fine for a demo; not real pricing.
-
-### Caching
-
-All live API responses (own service, Amadeus, Google Places) are
-cached — see `cache/`. No setup needed: defaults to an in-memory cache.
-Set `REDIS_URL` in `.env` to use Redis instead (falls back to
-in-memory automatically if Redis is configured but unreachable, rather
-than failing trip planning over a cache outage).
-
-Two TTLs, both overridable in `.env`:
-- `PRICE_CACHE_TTL_SECONDS` (default 900 / 15 min) — flight/hotel
-  prices, activity search results
-- `REFERENCE_CACHE_TTL_SECONDS` (default 86400 / 24h) — Amadeus
-  city-code lookups, which don't change day to day
-
-Cache keys are built from the search parameters (route/city/dates),
-not the budget ceiling — so a reallocation round re-querying the same
-route/city during the negotiation loop hits the cache instead of
-re-fetching from a rate-limited provider, while each agent still
-re-filters the (possibly cached) results against its current ceiling
-fresh every time.
-
-## Running the tests
-
-```bash
-pytest tests/ -v
-```
-
-126 tests: Pydantic schemas, pricing/reallocation logic (including the
-ceiling-drift edge case and floor-aware reallocation targeting), all
-three domain agents across their 3-tier data sources, the caching
-layer, the self-hosted data service, full graph integration (parallel
-fan-out/fan-in via LangGraph's `operator.add` reducer), and the
-FastAPI SSE endpoint.
-
-## Running the frontend
-
-```bash
+# Navigate to frontend directory
 cd frontend
+
+# Install dependencies
 npm install
-cp .env.example .env   # point VITE_API_BASE_URL at the backend above
+
+# Build for production
+npm run build
+
+# Start Vite development server
 npm run dev
 ```
 
-See `frontend/README.md` for architecture notes on how the SSE stream maps
-to the live agent-progress UI.
+Frontend dashboard will be accessible at `http://localhost:5173`.
 
-## Known gaps / next steps
+---
 
-- **Authentication**: Users currently share a single local SQLite database. Multi-user authentication needs to be implemented to isolate trip data.
-- **Cache Scaling**: In-memory cache (the default) isn't shared across worker processes — fine for a single `uvicorn` process, but a multi-worker deployment would need `REDIS_URL` set for the cache to actually help.
-- **Data Coverage**: While the activity fee data has been expanded to 6 major Indian cities (Delhi, Mumbai, Hyderabad, Bengaluru, Chennai, Kolkata), it remains hand-curated and narrow (mostly history/nature). No clean bulk dataset exists for this yet. See `data_service/README.md` for how to extend it.
+## 4. REST API Endpoint Reference
+
+| Method | Route | Description |
+| :--- | :--- | :--- |
+| `GET` | `/health` | System health check (`status: ok`) |
+| `GET` | `/api/status` | Comprehensive status across all 8 registered agents |
+| `GET` | `/api/peas` | Full PEAS matrix, environment taxonomy & OOP comparison |
+| `POST` | `/api/rules/evaluate` | Evaluates forward-chaining travel condition-action rules |
+| `GET` | `/api/concurrency/status` | Live thread count, queue depth, and microsecond latency stats |
+| `POST` | `/api/concurrency/trigger` | Dispatches background telemetry load batch |
+| `POST` | `/api/socket/run-exchange` | Executes low-level TCP socket handshake & quote exchange |
+| `POST` | `/api/negotiation/run` | Multi-turn proposal, bidding, and consensus protocol |
+| `POST` | `/api/utility/optimize` | Evaluates and ranks 10 travel options using MAUT |
+| `POST` | `/api/bdi/replan` | Demonstrates belief revision & intention recovery after shock |
+| `GET` | `/api/knowledge/destination/{city}` | Retrieves destination profile from JSON ontology |
+| `GET` | `/api/weather/{city}` | Live weather forecast with mock fallback |
+| `GET` | `/api/security/audit` | Audits 5 cryptographic test cases (tamper/replay/rogue) |
+| `POST` | `/api/security/verify` | Verifies inbound HMAC-SHA256 signed message |
+| `POST` | `/api/demo/run` | Executes complete end-to-end 10-stage lifecycle |
+| `GET` | `/api/demo/history` | Fetches saved SQLite itinerary history |
+| `POST` | `/plan-trip` | Streams LangGraph SSE node progress live |
+
+---
+
+## 5. Deployment Guide (Vercel)
+
+The application is architected for seamless Vercel deployment:
+- **Frontend**: Vite static build deployed to edge CDN (`frontend/dist`).
+- **Backend API**: Python serverless runtime via `@vercel/python` and `api/index.py`.
+- **Database**: SQLite storage configured with automatic fallback to `/tmp/tripsync.db` under serverless read-only restrictions.
+
+Deploy command:
+```bash
+vercel --prod
+```
+
+---
+
+## 6. Verification & Test Results
+
+```text
+============================= test session starts ==============================
+platform darwin -- Python 3.13.1, pytest-9.1.1, pluggy-1.7.0
+rootdir: /Users/hassan/AGENT_TECHNOLOGY/multi-agent-ai-travel-planner
+plugins: langsmith-0.15.0, anyio-4.16.0, respx-0.23.1
+collected 149 items
+
+tests/test_amadeus_client.py .........                                   [  6%]
+tests/test_api.py .........                                              [ 12%]
+tests/test_cache.py ................                                     [ 22%]
+tests/test_client_caching.py ...                                         [ 24%]
+tests/test_config.py ....                                                [ 27%]
+tests/test_data_service.py .........................                     [ 44%]
+tests/test_domain_agents.py ..........                                   [ 51%]
+tests/test_google_places_client.py .....                                 [ 54%]
+tests/test_graph_integration.py ......                                   [ 58%]
+tests/test_live_api_fallback.py .....................                    [ 72%]
+tests/test_pricing_agent.py .............                                [ 81%]
+tests/test_smarttrip_modules.py ........................                 [ 97%]
+tests/test_storage.py ....                                               [100%]
+
+============================= 149 passed in 5.66s ==============================
+```
+
+---
+
+## 7. Faculty & Project Collaborators
+
+- **GitHub Owner**: `mhassanworks`
+- **Target Repository**: `smarttrip-ai-agent`
+- **Faculty Collaborator**: `rameshbabu.pv@gmail.com`
+- **Project Lead**: Hasan
+
+For in-depth execution logs, see [`docs/SAMPLE_EXECUTION_LOGS.md`](docs/SAMPLE_EXECUTION_LOGS.md).

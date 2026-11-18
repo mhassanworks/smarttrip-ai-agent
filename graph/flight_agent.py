@@ -165,7 +165,7 @@ def run_flight_agent(state: TravelPlannerState) -> dict:
         return {
             "flight_result": chosen,
             "message_log": [message],
-            "flight_at_floor": not bool(within_budget),
+            "flight_at_floor": not bool(within_budget) if data_source != "mock" else False,
         }
 
     except Exception as exc:

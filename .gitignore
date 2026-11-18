@@ -13,5 +13,10 @@ node_modules/
 dist/
 .env
 
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
 # OS
 .DS_Store

@@ -6,6 +6,7 @@ Stores the full itinerary JSON alongside queryable metadata columns
 deserialize every row.  Thread-safe via check_same_thread=False.
 """
 import json
+import os
 import sqlite3
 import uuid
 from datetime import datetime, timezone
@@ -16,8 +17,15 @@ from config import settings
 
 class ItineraryStore:
     def __init__(self, db_path: str | None = None):
-        self._db_path = db_path or settings.sqlite_db_path
-        self._conn = sqlite3.connect(self._db_path, check_same_thread=False)
+        target_path = db_path or settings.sqlite_db_path
+        if os.environ.get("VERCEL") and not target_path.startswith("/tmp"):
+            target_path = os.path.join("/tmp", os.path.basename(target_path))
+        self._db_path = target_path
+        try:
+            self._conn = sqlite3.connect(self._db_path, check_same_thread=False)
+        except sqlite3.OperationalError:
+            self._db_path = os.path.join("/tmp", os.path.basename(target_path))
+            self._conn = sqlite3.connect(self._db_path, check_same_thread=False)
         self._conn.row_factory = sqlite3.Row
         self._init_db()
 

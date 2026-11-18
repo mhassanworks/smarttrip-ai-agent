@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "buildCommand": "npm run --prefix frontend build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/health",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/plan-trip",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/trips/:path*",
+      "destination": "/api/index.py"
+    },
+    {
+      "source": "/trips",
+      "destination": "/api/index.py"
+    }
+  ]
+}
