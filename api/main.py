@@ -389,3 +389,43 @@ async def run_capstone_demo(request: Optional[CapstoneDemoRequest] = None):
 async def get_demo_history():
     """Returns past itineraries and demo executions saved in SQLite database."""
     return _store.list_all()
+
+
+# ============================================================================
+# Static Frontend Single-Page Application (SPA) Serving
+# ============================================================================
+import os
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+_frontend_dist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend", "dist")
+_assets_dir = os.path.join(_frontend_dist, "assets")
+
+if os.path.exists(_assets_dir):
+    app.mount("/assets", StaticFiles(directory=_assets_dir), name="assets")
+
+
+@app.get("/{full_path:path}")
+async def serve_frontend_spa(full_path: str):
+    # Do not intercept API or system endpoints
+    if (
+        full_path.startswith("api/")
+        or full_path in ["health", "plan-trip", "trips"]
+        or full_path.startswith("trips/")
+    ):
+        raise HTTPException(status_code=404, detail="Not Found")
+
+    target_file = os.path.join(_frontend_dist, full_path)
+    if os.path.exists(target_file) and os.path.isfile(target_file):
+        return FileResponse(target_file)
+
+    index_file = os.path.join(_frontend_dist, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+
+    return {
+        "service": "SmartTrip AI Multi-Agent Platform",
+        "status": "OPERATIONAL",
+        "version": "2.0.0",
+        "dashboard": "Frontend build pending or running in API-only mode.",
+    }
