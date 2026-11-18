@@ -1,0 +1,6 @@
+[
+  {"origin": "New York", "destination": "Paris", "days": 5, "budget": 6200, "preference": "Culture"},
+  {"origin": "London", "destination": "Dubai", "days": 4, "budget": 4800, "preference": "Luxury"},
+  {"origin": "Sydney", "destination": "Tokyo", "days": 7, "budget": 5500, "preference": "Adventure"},
+  {"origin": "Toronto", "destination": "Bali", "days": 8, "budget": 4200, "preference": "Relaxation"}
+]
