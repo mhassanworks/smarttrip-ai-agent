@@ -5,7 +5,7 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/api/:path*",
+      "source": "/api/(.*)",
       "destination": "/api/index.py"
     },
     {
@@ -17,12 +17,16 @@
       "destination": "/api/index.py"
     },
     {
-      "source": "/trips/:path*",
+      "source": "/trips/(.*)",
       "destination": "/api/index.py"
     },
     {
       "source": "/trips",
       "destination": "/api/index.py"
+    },
+    {
+      "source": "/((?!assets/|favicon\\.ico).*)",
+      "destination": "/index.html"
     }
   ]
 }

@@ -66,6 +66,29 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+@app.middleware("http")
+async def vercel_path_rewrite_middleware(request, call_next):
+    # In Vercel serverless, requests routed to /api/index.py retain original path in headers
+    matched_path = (
+        request.headers.get("x-matched-path")
+        or request.headers.get("x-original-url")
+        or request.headers.get("x-forwarded-uri")
+    )
+    if matched_path:
+        cleaned = matched_path.split("?")[0]
+        # If it was matched as a subpath or rewritten to index.py
+        if request.scope.get("path") in ["/api/index.py", "/api/index.py/"]:
+            request.scope["path"] = cleaned
+
+    # Strip /api/index.py prefix if passed through directly
+    if request.scope.get("path", "").startswith("/api/index.py"):
+        suffix = request.scope["path"][len("/api/index.py"):]
+        request.scope["path"] = suffix if suffix else "/"
+
+    return await call_next(request)
+
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
