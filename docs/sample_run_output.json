@@ -1,0 +1,1766 @@
+{
+  "status": "CAPSTONE_EXECUTION_COMPLETED",
+  "demo_id": "demo-6b10e89887",
+  "persisted_trip_id": "b9fc8a6c30a2",
+  "timestamp": "2026-11-18T16:04:45.861766+00:00",
+  "total_execution_time_ms": 1089.74,
+  "inputs": {
+    "origin": "DEL",
+    "destination": "Goa",
+    "budget": 45000.0,
+    "traveler_type": "couple",
+    "interests": [
+      "beach",
+      "culture",
+      "relaxation"
+    ]
+  },
+  "assignment_modules": {
+    "1_peas": {
+      "title": "SmartTrip AI \u2014 PEAS & Multi-Agent Environment Specification",
+      "version": "2.0.0",
+      "peas_matrix": [
+        {
+          "agent": "Flight Agent",
+          "role": "Autonomous Airline Search & Fare Optimization",
+          "performance_measure": "Cost within ceiling, minimal layovers/stops, convenient departure time, airline reliability rating >= 4.0",
+          "environment": "Airline inventories, multi-tier pricing APIs (Amadeus, private data service, mock), flight schedules, seat classes",
+          "actuators": "API queries, flight option ranking, proposal submission to message bus, floor-price flag emission",
+          "sensors": "Trip request (origin, destination, departure date), category budget ceiling, HTTP response codes, latency metrics",
+          "characteristics": [
+            "Goal-directed",
+            "Utility-driven",
+            "Fall-through resilient"
+          ]
+        },
+        {
+          "agent": "Hotel Agent",
+          "role": "Lodging Acquisition & Amenity Alignment",
+          "performance_measure": "Nightly rate <= ceiling, guest review score >= 4.0/5.0, proximity to attractions, cancellation flexibility",
+          "environment": "Hotel booking systems, room inventory, location coordinates, seasonal demand curves",
+          "actuators": "Hotel search execution, room selection, cost-per-night calculation, reservation proposal generation",
+          "sensors": "Destination city, check-in/out dates, guest count, accommodation budget ceiling",
+          "characteristics": [
+            "Constraint-satisfying",
+            "Preference-aware",
+            "Negotiating"
+          ]
+        },
+        {
+          "agent": "Activity Agent",
+          "role": "Experience Curation & Attraction Scheduling",
+          "performance_measure": "Activity bundle cost <= ceiling, diversity of cultural/leisure experiences, interest match score, schedule feasibility",
+          "environment": "Landmark registries, monument entry fees (ASI fees, museum tickets), operating hours, weather forecasts",
+          "actuators": "Itinerary curation, entry fee summation, activity pruning under budget pressure, day-by-day scheduling",
+          "sensors": "Traveler interests, trip duration, destination city, activity budget ceiling, weather conditions",
+          "characteristics": [
+            "Context-aware",
+            "Content-filtering",
+            "Adaptive"
+          ]
+        },
+        {
+          "agent": "Pricing & Budget Agent",
+          "role": "Financial Arbitration & Consensus Arbiter",
+          "performance_measure": "Total itinerary cost <= user budget, minimal negotiation rounds, fair category allocation, variance minimization",
+          "environment": "Multi-agent message log, accumulated proposals, user financial ceiling, category ceilings",
+          "actuators": "Budget variance evaluation, reallocation target flagging, ceiling adjustment signals, consensus authorization",
+          "sensors": "Submitted proposals from Flight/Hotel/Activity agents, user max budget, negotiation round counter",
+          "characteristics": [
+            "Arbitrating",
+            "Cooperative",
+            "Convergence-optimizing"
+          ]
+        },
+        {
+          "agent": "BDI Planner Agent",
+          "role": "Dynamic Belief-Desire-Intention Replanning",
+          "performance_measure": "Goal preservation rate under environmental shocks, replanning latency (< 200ms), plan stability",
+          "environment": "Dynamic external world: airline fare surges, hotel sold-out events, weather disruptions",
+          "actuators": "Belief revision, desire reconsideration, intention reconstruction, revised booking commitment",
+          "sensors": "Real-time pricing feeds, cancellation alerts, weather warnings, user goal constraints",
+          "characteristics": [
+            "Proactive",
+            "Reactive",
+            "Self-healing"
+          ]
+        },
+        {
+          "agent": "Socket Communication Agent",
+          "role": "Low-Latency Inter-Agent TCP Messaging",
+          "performance_measure": "Zero packet corruption, sub-millisecond serialization latency, successful handshake and mutual commit",
+          "environment": "TCP/IP local/distributed network, stream sockets, JSON-serialized protocol frames",
+          "actuators": "Socket bind/connect, length-delimited JSON frame transmission, acknowledgment dispatch, connection teardown",
+          "sensors": "Socket buffer bytes, EOF signals, network latency timer, connection reset triggers",
+          "characteristics": [
+            "Deterministic",
+            "Protocol-compliant",
+            "Synchronous/Asynchronous"
+          ]
+        },
+        {
+          "agent": "Security & Verification Agent",
+          "role": "Cryptographic Authenticity & Tamper Detection",
+          "performance_measure": "100% detection of unauthorized or modified messages, 0 false acceptances, cryptographic overhead < 5ms",
+          "environment": "Inter-agent communication channel, potential hostile interceptors, untrusted endpoints",
+          "actuators": "HMAC-SHA256 signature computation, sender identity validation, message quarantine/rejection, security audit logging",
+          "sensors": "Inbound payload bytes, cryptographic signatures, shared secret keys, nonce registry, timestamps",
+          "characteristics": [
+            "Guarding",
+            "Non-repudiating",
+            "Zero-trust"
+          ]
+        },
+        {
+          "agent": "Concurrency Monitoring Worker",
+          "role": "Thread-Safe Background Telemetry & Health Checks",
+          "performance_measure": "Zero race conditions, sub-millisecond lock wait times, continuous throughput under heavy loads",
+          "environment": "Multi-threaded Python execution runtime, job queues, shared metric memory buffers",
+          "actuators": "Worker thread dispatch, queue push/pop, mutex lock acquisition/release, latency histogram updates",
+          "sensors": "Queue depth counter, task completion ticks, CPU execution time, thread liveness flags",
+          "characteristics": [
+            "Concurrent",
+            "Thread-safe",
+            "Telemetry-driven"
+          ]
+        }
+      ],
+      "environment_classifications": [
+        {
+          "dimension": "Observability",
+          "classification": "Partially Observable",
+          "justification": "Agents do not have full global knowledge of all airline seats, dynamic hotel rates, or future weather. They must probe external APIs and infer state through selective queries."
+        },
+        {
+          "dimension": "Determinism",
+          "classification": "Stochastic",
+          "justification": "Prices, availability, weather, and third-party API response times fluctuate probabilistically. Actions (e.g. attempting to book at a price) have non-deterministic outcomes over time."
+        },
+        {
+          "dimension": "Dynamism",
+          "classification": "Dynamic",
+          "justification": "The environment evolves while agents deliberate: flight fares surge during high demand, hotel rooms sell out, and weather alerts arrive asynchronously."
+        },
+        {
+          "dimension": "Continuity",
+          "classification": "Discrete turns with Continuous attributes",
+          "justification": "Agents negotiate in discrete proposal rounds and communicate via discrete messages, but monetary budgets, latencies, and utility scores are continuous real numbers."
+        },
+        {
+          "dimension": "Multi-Agent Structure",
+          "classification": "Cooperative & Competitive (Coopetitive)",
+          "justification": "Agents share the overarching cooperative goal of constructing an optimal feasible trip, yet compete for finite budget allocations from the global expenditure pool."
+        },
+        {
+          "dimension": "Episodic vs Sequential",
+          "classification": "Sequential",
+          "justification": "Current decisions (e.g., flight chosen) directly constrain subsequent choices (e.g., hotel check-in time and remaining budget available for activities)."
+        }
+      ],
+      "agent_vs_oop": [
+        {
+          "dimension": "Autonomy & Control",
+          "autonomous_agent": "Active: Retains internal control over whether and when to act. Evaluates percepts against goals before accepting or rejecting a proposal.",
+          "oop_object": "Passive: Encapsulates state, but delegates execution control to the caller. When a method is called, it executes blindly without self-determination."
+        },
+        {
+          "dimension": "Proactivity vs Reactivity",
+          "autonomous_agent": "Goal-driven and proactive: Takes initiative to optimize utility, monitor background prices, and trigger replanning when environmental beliefs change.",
+          "oop_object": "Purely reactive: Only executes code when invoked directly by an external thread or method caller."
+        },
+        {
+          "dimension": "Interaction Model",
+          "autonomous_agent": "Flexible communication: Negotiates over shared communication channels (ACL, JSON sockets, LangGraph message logs) with bidding, counter-proposals, and consensus.",
+          "oop_object": "Rigid method invocation: Caller must know exact method signatures, argument types, and return values; tight temporal and semantic coupling."
+        },
+        {
+          "dimension": "Environment Awareness",
+          "autonomous_agent": "Situated in a dynamic environment: Continuously updates internal beliefs via sensory feeds (weather, pricing) and actuates changes.",
+          "oop_object": "Self-contained internal state: Typically unaware of external environment unless passed as explicit parameters to method calls."
+        },
+        {
+          "dimension": "Failure Handling & Resilience",
+          "autonomous_agent": "Adaptive Replanning (BDI): Detects failure (e.g. over-budget, sold out) and autonomously searches for alternative recovery paths.",
+          "oop_object": "Exception bubbling: Raises exceptions up the call stack; relies on caller to catch or crashes execution flow."
+        },
+        {
+          "dimension": "Design Objective",
+          "autonomous_agent": "Utility maximization under uncertainty and resource constraints.",
+          "oop_object": "Data abstraction, encapsulation, and code reuse through modular interfaces."
+        }
+      ]
+    },
+    "2_rules": {
+      "applied_rules": [
+        {
+          "rule_id": "RULE-PREF-03",
+          "name": "Couple Romance Policy",
+          "category": "preference",
+          "priority": 85,
+          "description": "Prioritizes boutique accommodations and scenic/dining experiences."
+        },
+        {
+          "rule_id": "RULE-DEST-01",
+          "name": "Coastal & Beach Matching",
+          "category": "destination",
+          "priority": 75,
+          "description": "Suggests top beach destinations when travelers express interest in coastal relaxation."
+        },
+        {
+          "rule_id": "RULE-DEST-03",
+          "name": "Heritage & Cultural Exploration",
+          "category": "destination",
+          "priority": 75,
+          "description": "Matches cultural and historical travelers with UNESCO heritage cities."
+        }
+      ],
+      "budget_ceilings": {
+        "flight": 15750.0,
+        "hotel": 20250.0,
+        "activity": 9000.0
+      },
+      "recommended_tags": [
+        "romantic-dining",
+        "boutique-resorts",
+        "sunset-cruises",
+        "scenic",
+        "water-sports",
+        "beachfront",
+        "coastal-dining",
+        "monument-passes",
+        "guided-walks",
+        "unesco-sites",
+        "museums"
+      ],
+      "alerts": [],
+      "suggested_destinations": [
+        "Goa",
+        "Kerala",
+        "Andaman",
+        "Phuket",
+        "Gokarna",
+        "Jaipur",
+        "Delhi",
+        "Agra",
+        "Varanasi",
+        "Udaipur",
+        "Hampi"
+      ],
+      "metadata": {
+        "evaluated_rules_count": 9,
+        "matched_rules_count": 3,
+        "total_budget": 45000.0
+      }
+    },
+    "3_concurrency": {
+      "active_workers": 3,
+      "worker_threads": [
+        "SmartTripWorker-1",
+        "SmartTripWorker-2",
+        "SmartTripWorker-3"
+      ],
+      "queue_depth": 0,
+      "is_running": true,
+      "total_tasks_processed": 6,
+      "latency_metrics": {
+        "avg_processing_ms": 4.814,
+        "min_processing_ms": 2.623,
+        "max_processing_ms": 6.318,
+        "unit": "milliseconds"
+      },
+      "recent_executions": [
+        {
+          "task_id": "task-47bbe6f5",
+          "task_type": "weather_probe",
+          "target": "Hotel-AtliQ",
+          "worker_name": "SmartTripWorker-1",
+          "queued_duration_ms": 0.103,
+          "processing_latency_ms": 3.768,
+          "total_latency_ms": 3.871,
+          "status": "SUCCESS",
+          "timestamp": "2026-11-18T16:04:46.914434+00:00",
+          "result_summary": "Weather probe checked for Hotel-AtliQ; index clear"
+        },
+        {
+          "task_id": "task-da1e395e",
+          "task_type": "price_ticker",
+          "target": "DEL-BOM",
+          "worker_name": "SmartTripWorker-2",
+          "queued_duration_ms": 0.205,
+          "processing_latency_ms": 6.158,
+          "total_latency_ms": 6.363,
+          "status": "SUCCESS",
+          "timestamp": "2026-11-18T16:04:46.916783+00:00",
+          "result_summary": "Queried latest fare trends for DEL-BOM; variance +0.8%"
+        },
+        {
+          "task_id": "task-59ec2a51",
+          "task_type": "price_ticker",
+          "target": "BOM-GOI",
+          "worker_name": "SmartTripWorker-3",
+          "queued_duration_ms": 0.12,
+          "processing_latency_ms": 6.241,
+          "total_latency_ms": 6.361,
+          "status": "SUCCESS",
+          "timestamp": "2026-11-18T16:04:46.916870+00:00",
+          "result_summary": "Queried latest fare trends for BOM-GOI; variance +0.8%"
+        },
+        {
+          "task_id": "task-635aa553",
+          "task_type": "weather_probe",
+          "target": "Weather-Goa",
+          "worker_name": "SmartTripWorker-1",
+          "queued_duration_ms": 3.99,
+          "processing_latency_ms": 3.777,
+          "total_latency_ms": 7.767,
+          "status": "SUCCESS",
+          "timestamp": "2026-11-18T16:04:46.918331+00:00",
+          "result_summary": "Weather probe checked for Weather-Goa; index clear"
+        },
+        {
+          "task_id": "task-c01956b3",
+          "task_type": "agent_health",
+          "target": "Pricing-Arbiter",
+          "worker_name": "SmartTripWorker-2",
+          "queued_duration_ms": 6.283,
+          "processing_latency_ms": 2.623,
+          "total_latency_ms": 8.906,
+          "status": "SUCCESS",
+          "timestamp": "2026-11-18T16:04:46.919497+00:00",
+          "result_summary": "Health check OK for Pricing-Arbiter; zero thread deadlocks"
+        },
+        {
+          "task_id": "task-ea106142",
+          "task_type": "price_ticker",
+          "target": "DEL-BOM",
+          "worker_name": "SmartTripWorker-3",
+          "queued_duration_ms": 6.308,
+          "processing_latency_ms": 6.318,
+          "total_latency_ms": 12.626,
+          "status": "SUCCESS",
+          "timestamp": "2026-11-18T16:04:46.923264+00:00",
+          "result_summary": "Queried latest fare trends for DEL-BOM; variance +0.8%"
+        }
+      ]
+    },
+    "4_socket_communication": {
+      "status": "SUCCESS",
+      "mode": "ADAPTIVE_STREAM_FALLBACK",
+      "server_endpoint": "127.0.0.1:8999",
+      "protocol": "TCP / Streaming JSON Frame",
+      "roundtrip_latency_ms": 2.694,
+      "total_bytes_exchanged": 1910,
+      "messages_count": 12,
+      "transcript": [
+        {
+          "role": "Agent A (Trip Coordinator)",
+          "event": "SEND_HANDSHAKE_INIT",
+          "raw_bytes": 118,
+          "payload": {
+            "type": "HANDSHAKE_INIT",
+            "sender": "Agent-A-Coordinator",
+            "client_version": "SmartTrip-2.0",
+            "auth_token": "bearer-sig-auth-2026"
+          },
+          "timestamp": "2026-11-18T16:04:46.910025+00:00"
+        },
+        {
+          "role": "Agent B (Resource Broker)",
+          "event": "RECV_HANDSHAKE",
+          "raw_bytes": 118,
+          "payload": {
+            "type": "HANDSHAKE_INIT",
+            "sender": "Agent-A-Coordinator",
+            "client_version": "SmartTrip-2.0",
+            "auth_token": "bearer-sig-auth-2026"
+          },
+          "timestamp": "2026-11-18T16:04:46.910093+00:00"
+        },
+        {
+          "role": "Agent B (Resource Broker)",
+          "event": "SEND_HANDSHAKE_ACK",
+          "raw_bytes": 94,
+          "payload": {
+            "type": "HANDSHAKE_ACK",
+            "sender": "Agent-B-Broker",
+            "status": "READY",
+            "supported_protocols": [
+              "v2.0-json"
+            ]
+          },
+          "timestamp": "2026-11-18T16:04:46.910103+00:00"
+        },
+        {
+          "role": "Agent A (Trip Coordinator)",
+          "event": "RECV_HANDSHAKE_ACK",
+          "raw_bytes": 94,
+          "payload": {
+            "type": "HANDSHAKE_ACK",
+            "sender": "Agent-B-Broker",
+            "status": "READY",
+            "supported_protocols": [
+              "v2.0-json"
+            ]
+          },
+          "timestamp": "2026-11-18T16:04:46.910112+00:00"
+        },
+        {
+          "role": "Agent A (Trip Coordinator)",
+          "event": "SEND_QUOTE_REQUEST",
+          "raw_bytes": 164,
+          "payload": {
+            "type": "QUOTE_REQUEST",
+            "sender": "Agent-A-Coordinator",
+            "parameters": {
+              "origin": "DEL",
+              "destination": "Goa",
+              "budget": 45000.0
+            }
+          },
+          "timestamp": "2026-11-18T16:04:46.910119+00:00"
+        },
+        {
+          "role": "Agent B (Resource Broker)",
+          "event": "RECV_QUOTE_REQUEST",
+          "raw_bytes": 164,
+          "payload": {
+            "type": "QUOTE_REQUEST",
+            "sender": "Agent-A-Coordinator",
+            "parameters": {
+              "origin": "DEL",
+              "destination": "Goa",
+              "budget": 45000.0
+            }
+          },
+          "timestamp": "2026-11-18T16:04:46.910123+00:00"
+        },
+        {
+          "role": "Agent B (Resource Broker)",
+          "event": "SEND_INVENTORY_OFFER",
+          "raw_bytes": 285,
+          "payload": {
+            "type": "INVENTORY_OFFER",
+            "sender": "Agent-B-Broker",
+            "flight_offer": {
+              "flight_id": "UK-829",
+              "carrier": "Vistara",
+              "price": 14200.0,
+              "seats_available": 4
+            },
+            "hotel_offer": {
+              "hotel_id": "HTL-GOA-77",
+              "property": "Taj Fort Aguada Resort",
+              "nightly_rate": 8500.0,
+              "rooms_available": 2
+            },
+            "valid_until_nonce": "nonce-7729-exp10m"
+          },
+          "timestamp": "2026-11-18T16:04:46.910131+00:00"
+        },
+        {
+          "role": "Agent A (Trip Coordinator)",
+          "event": "RECV_INVENTORY_OFFER",
+          "raw_bytes": 285,
+          "payload": {
+            "type": "INVENTORY_OFFER",
+            "sender": "Agent-B-Broker",
+            "flight_offer": {
+              "flight_id": "UK-829",
+              "carrier": "Vistara",
+              "price": 14200.0,
+              "seats_available": 4
+            },
+            "hotel_offer": {
+              "hotel_id": "HTL-GOA-77",
+              "property": "Taj Fort Aguada Resort",
+              "nightly_rate": 8500.0,
+              "rooms_available": 2
+            },
+            "valid_until_nonce": "nonce-7729-exp10m"
+          },
+          "timestamp": "2026-11-18T16:04:46.910136+00:00"
+        },
+        {
+          "role": "Agent A (Trip Coordinator)",
+          "event": "SEND_COMMIT_RESERVATION",
+          "raw_bytes": 172,
+          "payload": {
+            "type": "COMMIT_RESERVATION",
+            "sender": "Agent-A-Coordinator",
+            "selected_flight": "UK-829",
+            "selected_hotel": "HTL-GOA-77",
+            "nonce": "nonce-7729-exp10m"
+          },
+          "timestamp": "2026-11-18T16:04:46.910141+00:00"
+        },
+        {
+          "role": "Agent B (Resource Broker)",
+          "event": "RECV_COMMIT",
+          "raw_bytes": 172,
+          "payload": {
+            "type": "COMMIT_RESERVATION",
+            "sender": "Agent-A-Coordinator",
+            "selected_flight": "UK-829",
+            "selected_hotel": "HTL-GOA-77",
+            "nonce": "nonce-7729-exp10m"
+          },
+          "timestamp": "2026-11-18T16:04:46.910145+00:00"
+        },
+        {
+          "role": "Agent B (Resource Broker)",
+          "event": "SEND_COMMIT_ACK",
+          "raw_bytes": 122,
+          "payload": {
+            "type": "COMMIT_ACK",
+            "sender": "Agent-B-Broker",
+            "booking_reference": "ST-CONF-88219A",
+            "status": "CONFIRMED_AND_LOCKED"
+          },
+          "timestamp": "2026-11-18T16:04:46.910149+00:00"
+        },
+        {
+          "role": "Agent A (Trip Coordinator)",
+          "event": "RECV_COMMIT_ACK",
+          "raw_bytes": 122,
+          "payload": {
+            "type": "COMMIT_ACK",
+            "sender": "Agent-B-Broker",
+            "booking_reference": "ST-CONF-88219A",
+            "status": "CONFIRMED_AND_LOCKED"
+          },
+          "timestamp": "2026-11-18T16:04:46.910152+00:00"
+        }
+      ],
+      "server_errors": [],
+      "fallback_note": "Adaptive stream fallback engaged ([Errno 1] Operation not permitted); full JSON frame serialization preserved."
+    },
+    "5_negotiation": {
+      "status": "CONSENSUS_REACHED",
+      "rounds_executed": 2,
+      "max_rounds": 3,
+      "user_budget": 45000.0,
+      "final_package_cost": 45000.0,
+      "budget_delta": 0.0,
+      "total_concessions_achieved": 11250.0,
+      "final_selection": {
+        "flight": {
+          "agent_id": "Agent-Flight",
+          "round_number": 2,
+          "category": "flight",
+          "proposed_cost": 17100.0,
+          "specification": "IndiGo Non-stop Morning Flight",
+          "tier": "standard",
+          "concession_made": 4500.0,
+          "rationale": "Selected standard tier route. Conceded \u20b94500.0 from prior round.",
+          "timestamp": "2026-11-18T16:04:46.946258+00:00"
+        },
+        "hotel": {
+          "agent_id": "Agent-Hotel",
+          "round_number": 2,
+          "category": "hotel",
+          "proposed_cost": 16650.0,
+          "specification": "Marriott Courtyard Executive Room",
+          "tier": "standard",
+          "concession_made": 6750.0,
+          "rationale": "Adjusted property to standard. Conceded \u20b96750.0.",
+          "timestamp": "2026-11-18T16:04:46.946306+00:00"
+        },
+        "activity": {
+          "agent_id": "Agent-Activity",
+          "round_number": 2,
+          "category": "activity",
+          "proposed_cost": 11250.0,
+          "specification": "Private Yacht Charter & Scuba Diving Pass",
+          "tier": "premium",
+          "concession_made": 0.0,
+          "rationale": "Curated premium activity itinerary. Conceded \u20b90.0.",
+          "timestamp": "2026-11-18T16:04:46.946320+00:00"
+        }
+      },
+      "rounds_history": [
+        {
+          "round_number": 1,
+          "total_proposed": 56250.0,
+          "user_budget": 45000.0,
+          "variance": 11250.0,
+          "is_within_budget": false,
+          "bids": [
+            {
+              "agent_id": "Agent-Flight",
+              "round_number": 1,
+              "category": "flight",
+              "proposed_cost": 21600.0,
+              "specification": "Air India Direct Express (Business Class Perks)",
+              "tier": "premium",
+              "concession_made": 0.0,
+              "rationale": "Initial bid submitted at premium tier.",
+              "timestamp": "2026-11-18T16:04:46.945983+00:00"
+            },
+            {
+              "agent_id": "Agent-Hotel",
+              "round_number": 1,
+              "category": "hotel",
+              "proposed_cost": 23400.0,
+              "specification": "Taj Exotica Oceanview Deluxe Suite",
+              "tier": "premium",
+              "concession_made": 0.0,
+              "rationale": "Initial lodging bid submitted at premium tier.",
+              "timestamp": "2026-11-18T16:04:46.946046+00:00"
+            },
+            {
+              "agent_id": "Agent-Activity",
+              "round_number": 1,
+              "category": "activity",
+              "proposed_cost": 11250.0,
+              "specification": "Private Yacht Charter & Scuba Diving Pass",
+              "tier": "premium",
+              "concession_made": 0.0,
+              "rationale": "Initial activities proposed at premium tier.",
+              "timestamp": "2026-11-18T16:04:46.946061+00:00"
+            }
+          ],
+          "arbiter_action": "BUDGET OVERRUN: Bundle cost \u20b956250.0 exceeds \u20b945000.0 by \u20b911250.0. Demanding concessions from Domain Agents.",
+          "consensus_reached": false
+        },
+        {
+          "round_number": 2,
+          "total_proposed": 45000.0,
+          "user_budget": 45000.0,
+          "variance": 0.0,
+          "is_within_budget": true,
+          "bids": [
+            {
+              "agent_id": "Agent-Flight",
+              "round_number": 2,
+              "category": "flight",
+              "proposed_cost": 17100.0,
+              "specification": "IndiGo Non-stop Morning Flight",
+              "tier": "standard",
+              "concession_made": 4500.0,
+              "rationale": "Selected standard tier route. Conceded \u20b94500.0 from prior round.",
+              "timestamp": "2026-11-18T16:04:46.946258+00:00"
+            },
+            {
+              "agent_id": "Agent-Hotel",
+              "round_number": 2,
+              "category": "hotel",
+              "proposed_cost": 16650.0,
+              "specification": "Marriott Courtyard Executive Room",
+              "tier": "standard",
+              "concession_made": 6750.0,
+              "rationale": "Adjusted property to standard. Conceded \u20b96750.0.",
+              "timestamp": "2026-11-18T16:04:46.946306+00:00"
+            },
+            {
+              "agent_id": "Agent-Activity",
+              "round_number": 2,
+              "category": "activity",
+              "proposed_cost": 11250.0,
+              "specification": "Private Yacht Charter & Scuba Diving Pass",
+              "tier": "premium",
+              "concession_made": 0.0,
+              "rationale": "Curated premium activity itinerary. Conceded \u20b90.0.",
+              "timestamp": "2026-11-18T16:04:46.946320+00:00"
+            }
+          ],
+          "arbiter_action": "CONSENSUS REACHED: Package cost \u20b945000.0 is within budget \u20b945000.0 (Surplus: \u20b90.0). Approved!",
+          "consensus_reached": true
+        }
+      ],
+      "chronological_log": [
+        {
+          "agent_id": "Agent-Flight",
+          "round_number": 1,
+          "category": "flight",
+          "proposed_cost": 21600.0,
+          "specification": "Air India Direct Express (Business Class Perks)",
+          "tier": "premium",
+          "concession_made": 0.0,
+          "rationale": "Initial bid submitted at premium tier.",
+          "timestamp": "2026-11-18T16:04:46.945983+00:00"
+        },
+        {
+          "agent_id": "Agent-Hotel",
+          "round_number": 1,
+          "category": "hotel",
+          "proposed_cost": 23400.0,
+          "specification": "Taj Exotica Oceanview Deluxe Suite",
+          "tier": "premium",
+          "concession_made": 0.0,
+          "rationale": "Initial lodging bid submitted at premium tier.",
+          "timestamp": "2026-11-18T16:04:46.946046+00:00"
+        },
+        {
+          "agent_id": "Agent-Activity",
+          "round_number": 1,
+          "category": "activity",
+          "proposed_cost": 11250.0,
+          "specification": "Private Yacht Charter & Scuba Diving Pass",
+          "tier": "premium",
+          "concession_made": 0.0,
+          "rationale": "Initial activities proposed at premium tier.",
+          "timestamp": "2026-11-18T16:04:46.946061+00:00"
+        },
+        {
+          "agent_id": "Agent-Flight",
+          "round_number": 2,
+          "category": "flight",
+          "proposed_cost": 17100.0,
+          "specification": "IndiGo Non-stop Morning Flight",
+          "tier": "standard",
+          "concession_made": 4500.0,
+          "rationale": "Selected standard tier route. Conceded \u20b94500.0 from prior round.",
+          "timestamp": "2026-11-18T16:04:46.946258+00:00"
+        },
+        {
+          "agent_id": "Agent-Hotel",
+          "round_number": 2,
+          "category": "hotel",
+          "proposed_cost": 16650.0,
+          "specification": "Marriott Courtyard Executive Room",
+          "tier": "standard",
+          "concession_made": 6750.0,
+          "rationale": "Adjusted property to standard. Conceded \u20b96750.0.",
+          "timestamp": "2026-11-18T16:04:46.946306+00:00"
+        },
+        {
+          "agent_id": "Agent-Activity",
+          "round_number": 2,
+          "category": "activity",
+          "proposed_cost": 11250.0,
+          "specification": "Private Yacht Charter & Scuba Diving Pass",
+          "tier": "premium",
+          "concession_made": 0.0,
+          "rationale": "Curated premium activity itinerary. Conceded \u20b90.0.",
+          "timestamp": "2026-11-18T16:04:46.946320+00:00"
+        }
+      ]
+    },
+    "6_utility_optimization": {
+      "status": "OPTIMIZATION_COMPLETE",
+      "mathematical_model": "Multi-Attribute Utility Theory (MAUT)",
+      "formula": "U(c) = w_b\u00b7U_b(c) + w_r\u00b7U_r(c) + w_c\u00b7U_c(c) + w_w\u00b7U_w(c)",
+      "weights": {
+        "budget_weight": 0.35,
+        "rating_weight": 0.25,
+        "convenience_weight": 0.2,
+        "weather_weight": 0.2
+      },
+      "user_budget": 45000.0,
+      "total_options_evaluated": 10,
+      "winning_configuration": {
+        "rank": 1,
+        "config_id": "CONF-07",
+        "name": "Scenic Nature & Leisure Retreat",
+        "archetype": "Wellness & Relaxation",
+        "total_cost": 39150.0,
+        "cost_variance": -5850.0,
+        "sub_utilities": {
+          "budget_efficiency": 84.75,
+          "quality_rating": 91.6,
+          "transit_convenience": 98.0,
+          "weather_suitability": 91.0
+        },
+        "aggregate_utility": 90.36,
+        "details": {
+          "flight": {
+            "name": "IndiGo 6E-212 (Morning Saver)",
+            "price": 14400.0,
+            "stops": 0,
+            "duration_hours": 2.5,
+            "rating": 4.3
+          },
+          "hotel": {
+            "name": "Alila Diwa Eco-Resort & Spa",
+            "price": 18000.0,
+            "stars": 4.5,
+            "rating": 4.7
+          },
+          "activity": {
+            "package": "Ayurvedic Wellness Session & Bird Sanctuary Walk",
+            "price": 6750.0
+          },
+          "weather_score": 0.91,
+          "tags": [
+            "eco-friendly",
+            "wellness",
+            "spa"
+          ]
+        },
+        "formula_breakdown": "U = (0.35 \u00d7 84.8) + (0.25 \u00d7 91.6) + (0.2 \u00d7 98.0) + (0.2 \u00d7 91.0) = 90.36"
+      },
+      "ranked_configurations": [
+        {
+          "rank": 1,
+          "config_id": "CONF-07",
+          "name": "Scenic Nature & Leisure Retreat",
+          "archetype": "Wellness & Relaxation",
+          "total_cost": 39150.0,
+          "cost_variance": -5850.0,
+          "sub_utilities": {
+            "budget_efficiency": 84.75,
+            "quality_rating": 91.6,
+            "transit_convenience": 98.0,
+            "weather_suitability": 91.0
+          },
+          "aggregate_utility": 90.36,
+          "details": {
+            "flight": {
+              "name": "IndiGo 6E-212 (Morning Saver)",
+              "price": 14400.0,
+              "stops": 0,
+              "duration_hours": 2.5,
+              "rating": 4.3
+            },
+            "hotel": {
+              "name": "Alila Diwa Eco-Resort & Spa",
+              "price": 18000.0,
+              "stars": 4.5,
+              "rating": 4.7
+            },
+            "activity": {
+              "package": "Ayurvedic Wellness Session & Bird Sanctuary Walk",
+              "price": 6750.0
+            },
+            "weather_score": 0.91,
+            "tags": [
+              "eco-friendly",
+              "wellness",
+              "spa"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 84.8) + (0.25 \u00d7 91.6) + (0.2 \u00d7 98.0) + (0.2 \u00d7 91.0) = 90.36"
+        },
+        {
+          "rank": 2,
+          "config_id": "CONF-02",
+          "name": "Balanced Smart Explorer",
+          "archetype": "Balanced Value",
+          "total_cost": 38700.0,
+          "cost_variance": -6300.0,
+          "sub_utilities": {
+            "budget_efficiency": 85.5,
+            "quality_rating": 89.4,
+            "transit_convenience": 98.0,
+            "weather_suitability": 92.0
+          },
+          "aggregate_utility": 90.28,
+          "details": {
+            "flight": {
+              "name": "IndiGo 6E-502 (Non-stop)",
+              "price": 15300.0,
+              "stops": 0,
+              "duration_hours": 2.5,
+              "rating": 4.4
+            },
+            "hotel": {
+              "name": "Lemon Tree Resort & Spa",
+              "price": 16200.0,
+              "stars": 4.0,
+              "rating": 4.5
+            },
+            "activity": {
+              "package": "Heritage Church Walk & Sunset Catamaran",
+              "price": 7200.0
+            },
+            "weather_score": 0.92,
+            "tags": [
+              "balanced",
+              "comfortable",
+              "scenic"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 85.5) + (0.25 \u00d7 89.4) + (0.2 \u00d7 98.0) + (0.2 \u00d7 92.0) = 90.28"
+        },
+        {
+          "rank": 3,
+          "config_id": "CONF-03",
+          "name": "Direct Flight Comfort Priority",
+          "archetype": "Transit Optimized",
+          "total_cost": 40500.0,
+          "cost_variance": -4500.0,
+          "sub_utilities": {
+            "budget_efficiency": 82.5,
+            "quality_rating": 86.8,
+            "transit_convenience": 99.2,
+            "weather_suitability": 90.0
+          },
+          "aggregate_utility": 88.41,
+          "details": {
+            "flight": {
+              "name": "Air India AI-880 Premium Economy",
+              "price": 18900.0,
+              "stops": 0,
+              "duration_hours": 2.2,
+              "rating": 4.2
+            },
+            "hotel": {
+              "name": "Hyatt Place Candolim",
+              "price": 15300.0,
+              "stars": 4.0,
+              "rating": 4.4
+            },
+            "activity": {
+              "package": "Old Goa Basilica & Spice Plantation",
+              "price": 6300.0
+            },
+            "weather_score": 0.9,
+            "tags": [
+              "fast-transit",
+              "direct-flight",
+              "relaxed"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 82.5) + (0.25 \u00d7 86.8) + (0.2 \u00d7 99.2) + (0.2 \u00d7 90.0) = 88.41"
+        },
+        {
+          "rank": 4,
+          "config_id": "CONF-09",
+          "name": "Family Suite Comfort Bundle",
+          "archetype": "Family Priority",
+          "total_cost": 40950.0,
+          "cost_variance": -4050.0,
+          "sub_utilities": {
+            "budget_efficiency": 81.75,
+            "quality_rating": 88.0,
+            "transit_convenience": 98.4,
+            "weather_suitability": 89.0
+          },
+          "aggregate_utility": 88.09,
+          "details": {
+            "flight": {
+              "name": "IndiGo 6E-789 (Midday Direct)",
+              "price": 16200.0,
+              "stops": 0,
+              "duration_hours": 2.4,
+              "rating": 4.4
+            },
+            "hotel": {
+              "name": "Novotel Goa Resort & Pool Suites",
+              "price": 17100.0,
+              "stars": 4.0,
+              "rating": 4.4
+            },
+            "activity": {
+              "package": "Dolphin Spotting Cruise & Waterpark Day Pass",
+              "price": 7650.0
+            },
+            "weather_score": 0.89,
+            "tags": [
+              "family",
+              "kid-friendly",
+              "pool-access"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 81.8) + (0.25 \u00d7 88.0) + (0.2 \u00d7 98.4) + (0.2 \u00d7 89.0) = 88.09"
+        },
+        {
+          "rank": 5,
+          "config_id": "CONF-06",
+          "name": "Action & Watersports Adventure",
+          "archetype": "Experiential Adventure",
+          "total_cost": 40500.0,
+          "cost_variance": -4500.0,
+          "sub_utilities": {
+            "budget_efficiency": 82.5,
+            "quality_rating": 83.4,
+            "transit_convenience": 97.6,
+            "weather_suitability": 94.0
+          },
+          "aggregate_utility": 88.04,
+          "details": {
+            "flight": {
+              "name": "Akasa Air QP-1301 (Direct)",
+              "price": 13500.0,
+              "stops": 0,
+              "duration_hours": 2.6,
+              "rating": 4.1
+            },
+            "hotel": {
+              "name": "Resort Rio Arpora",
+              "price": 14400.0,
+              "stars": 4.0,
+              "rating": 4.2
+            },
+            "activity": {
+              "package": "Parasailing, Jet Ski & Bungee Jump Pass",
+              "price": 12600.0
+            },
+            "weather_score": 0.94,
+            "tags": [
+              "adventure",
+              "watersports",
+              "adrenaline"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 82.5) + (0.25 \u00d7 83.4) + (0.2 \u00d7 97.6) + (0.2 \u00d7 94.0) = 88.04"
+        },
+        {
+          "rank": 6,
+          "config_id": "CONF-04",
+          "name": "Heritage & Cultural Boutique",
+          "archetype": "Culture Focused",
+          "total_cost": 43200.0,
+          "cost_variance": -1800.0,
+          "sub_utilities": {
+            "budget_efficiency": 78.0,
+            "quality_rating": 94.8,
+            "transit_convenience": 98.4,
+            "weather_suitability": 85.0
+          },
+          "aggregate_utility": 87.68,
+          "details": {
+            "flight": {
+              "name": "Vistara UK-841 (Direct)",
+              "price": 16200.0,
+              "stops": 0,
+              "duration_hours": 2.4,
+              "rating": 4.6
+            },
+            "hotel": {
+              "name": "Fort Tiracol Heritage Boutique Hotel",
+              "price": 18900.0,
+              "stars": 4.5,
+              "rating": 4.8
+            },
+            "activity": {
+              "package": "Private Historian Tour & Museum Passes",
+              "price": 8100.0
+            },
+            "weather_score": 0.85,
+            "tags": [
+              "boutique",
+              "historic",
+              "architecture"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 78.0) + (0.25 \u00d7 94.8) + (0.2 \u00d7 98.4) + (0.2 \u00d7 85.0) = 87.68"
+        },
+        {
+          "rank": 7,
+          "config_id": "CONF-10",
+          "name": "Culinary & Nightlife Epicurean",
+          "archetype": "Gourmet Experience",
+          "total_cost": 45450.0,
+          "cost_variance": 450.0,
+          "sub_utilities": {
+            "budget_efficiency": 73.2,
+            "quality_rating": 94.2,
+            "transit_convenience": 98.4,
+            "weather_suitability": 93.0
+          },
+          "aggregate_utility": 87.45,
+          "details": {
+            "flight": {
+              "name": "Vistara UK-855 (Direct)",
+              "price": 15750.0,
+              "stops": 0,
+              "duration_hours": 2.4,
+              "rating": 4.5
+            },
+            "hotel": {
+              "name": "W Goa Vagator Beachfront",
+              "price": 20700.0,
+              "stars": 5.0,
+              "rating": 4.8
+            },
+            "activity": {
+              "package": "Chef-Led Goan Food Trail & Sunset Club Reservation",
+              "price": 9000.0
+            },
+            "weather_score": 0.93,
+            "tags": [
+              "culinary",
+              "nightlife",
+              "luxury"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 73.2) + (0.25 \u00d7 94.2) + (0.2 \u00d7 98.4) + (0.2 \u00d7 93.0) = 87.45"
+        },
+        {
+          "rank": 8,
+          "config_id": "CONF-08",
+          "name": "Off-Peak Value Maximizer",
+          "archetype": "Smart Deal",
+          "total_cost": 30600.0,
+          "cost_variance": -14400.0,
+          "sub_utilities": {
+            "budget_efficiency": 99.0,
+            "quality_rating": 83.6,
+            "transit_convenience": 71.2,
+            "weather_suitability": 86.0
+          },
+          "aggregate_utility": 86.99,
+          "details": {
+            "flight": {
+              "name": "Air India Express IX-711 (Evening)",
+              "price": 12150.0,
+              "stops": 1,
+              "duration_hours": 4.2,
+              "rating": 3.9
+            },
+            "hotel": {
+              "name": "BloomSuites Calangute",
+              "price": 13500.0,
+              "stars": 3.5,
+              "rating": 4.3
+            },
+            "activity": {
+              "package": "Anjuna Flea Market & Beach Sunset Drinks",
+              "price": 4950.0
+            },
+            "weather_score": 0.86,
+            "tags": [
+              "off-peak",
+              "value",
+              "nightlife"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 99.0) + (0.25 \u00d7 83.6) + (0.2 \u00d7 71.2) + (0.2 \u00d7 86.0) = 86.99"
+        },
+        {
+          "rank": 9,
+          "config_id": "CONF-01",
+          "name": "Budget Backpacker Saver",
+          "archetype": "Cost Minimizer",
+          "total_cost": 24300.0,
+          "cost_variance": -20700.0,
+          "sub_utilities": {
+            "budget_efficiency": 100.0,
+            "quality_rating": 81.8,
+            "transit_convenience": 66.0,
+            "weather_suitability": 88.0
+          },
+          "aggregate_utility": 86.25,
+          "details": {
+            "flight": {
+              "name": "SpiceJet SG-192 (1 Stop)",
+              "price": 10800.0,
+              "stops": 1,
+              "duration_hours": 5.5,
+              "rating": 3.6
+            },
+            "hotel": {
+              "name": "Zostel Beach Hostel Private Pod",
+              "price": 9900.0,
+              "stars": 3.0,
+              "rating": 4.3
+            },
+            "activity": {
+              "package": "Self-guided Beach Walk & Fort Aguada",
+              "price": 3600.0
+            },
+            "weather_score": 0.88,
+            "tags": [
+              "budget",
+              "hostel",
+              "social"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 100.0) + (0.25 \u00d7 81.8) + (0.2 \u00d7 66.0) + (0.2 \u00d7 88.0) = 86.25"
+        },
+        {
+          "rank": 10,
+          "config_id": "CONF-05",
+          "name": "Coastal Luxury Executive",
+          "archetype": "Premium Indulgence",
+          "total_cost": 54900.0,
+          "cost_variance": 9900.0,
+          "sub_utilities": {
+            "budget_efficiency": 35.4,
+            "quality_rating": 97.4,
+            "transit_convenience": 99.2,
+            "weather_suitability": 95.0
+          },
+          "aggregate_utility": 75.58,
+          "details": {
+            "flight": {
+              "name": "Vistara UK-992 Business Class",
+              "price": 21600.0,
+              "stops": 0,
+              "duration_hours": 2.2,
+              "rating": 4.8
+            },
+            "hotel": {
+              "name": "Taj Exotica Resort & Spa",
+              "price": 23400.0,
+              "stars": 5.0,
+              "rating": 4.9
+            },
+            "activity": {
+              "package": "Private Luxury Yacht & Scuba Diving",
+              "price": 9900.0
+            },
+            "weather_score": 0.95,
+            "tags": [
+              "luxury",
+              "5-star",
+              "vip"
+            ]
+          },
+          "formula_breakdown": "U = (0.35 \u00d7 35.4) + (0.25 \u00d7 97.4) + (0.2 \u00d7 99.2) + (0.2 \u00d7 95.0) = 75.58"
+        }
+      ]
+    },
+    "7_bdi_replanning": {
+      "status": "REPLANNING_SUCCESSFUL",
+      "shock_type": "price_surge",
+      "shock_description": "Unexpected airline fare surge (+65%) on IndiGo 6E-452 (Direct)! Flight price escalated to \u20b926730.0. Total package cost \u20b951930.0 breaches budget by \u20b96930.0.",
+      "replanning_steps": [
+        "Belief revision: Flight fare surged to \u20b926730.0 breaching budget constraint D1.",
+        "Desire reconsideration: D1 (Budget constraint) is strict. Agent searches option space for alternate carrier or adjusted lodging tier.",
+        "Option A considered: Downgrading hotel to budget hostel (rejected: violates D2 comfort).",
+        "Option B selected: Re-routing to SpiceJet SG-812 (1-stop, 1h layover) at \u20b911,800 + adjusting hotel room to Executive Standard at \u20b915,200.",
+        "Intentions revised: Revoked I1 (IndiGo surged), committed I1-ALT (SpiceJet) and I2-ADJ."
+      ],
+      "cost_progression": {
+        "initial_cost": 41400.0,
+        "shock_cost": 51930.0,
+        "replanned_cost": 36000.0,
+        "user_budget": 45000.0,
+        "recovered_budget_margin": 9000.0
+      },
+      "cycles": [
+        {
+          "phase": "INITIAL_COMMITTED_PLAN",
+          "timestamp": "2026-11-18T16:04:45.903890+00:00",
+          "beliefs": {
+            "user_budget": 45000.0,
+            "flight_price": 16200.0,
+            "flight_name": "IndiGo 6E-452 (Direct)",
+            "flight_status": "AVAILABLE",
+            "hotel_price": 18000.0,
+            "hotel_name": "BloomSuites Heritage Calangute",
+            "hotel_status": "AVAILABLE",
+            "activity_cost": 7200.0,
+            "activity_name": "Scuba Diving & Fort Walking Tour",
+            "weather_condition": "SUNNY",
+            "weather_risk_level": "LOW"
+          },
+          "desires": [
+            {
+              "desire_id": "D1",
+              "description": "Maintain total expenditures within budget (<= \u20b945000.0)",
+              "priority": 1,
+              "satisfied": true,
+              "rationale": "Primary constraint"
+            },
+            {
+              "desire_id": "D2",
+              "description": "Secure comfortable 4-star lodging with pool",
+              "priority": 2,
+              "satisfied": true,
+              "rationale": "Comfort requirement"
+            },
+            {
+              "desire_id": "D3",
+              "description": "Experience outdoor adventure & watersports",
+              "priority": 3,
+              "satisfied": true,
+              "rationale": "Traveler interest"
+            },
+            {
+              "desire_id": "D4",
+              "description": "Keep travel safety index high",
+              "priority": 1,
+              "satisfied": true,
+              "rationale": "Safety priority"
+            }
+          ],
+          "intentions": [
+            {
+              "intention_id": "I1",
+              "action_type": "BOOK_FLIGHT",
+              "target": "IndiGo 6E-452 (Direct)",
+              "allocated_cost": 16200.0,
+              "status": "COMMITTED"
+            },
+            {
+              "intention_id": "I2",
+              "action_type": "RESERVE_HOTEL",
+              "target": "BloomSuites Heritage Calangute",
+              "allocated_cost": 18000.0,
+              "status": "COMMITTED"
+            },
+            {
+              "intention_id": "I3",
+              "action_type": "SCHEDULE_ACTIVITY",
+              "target": "Scuba Diving & Fort Walking Tour",
+              "allocated_cost": 7200.0,
+              "status": "COMMITTED"
+            }
+          ],
+          "notes": "Initial plan stably committed. Total cost \u20b941400.0 is within budget \u20b945000.0."
+        },
+        {
+          "phase": "ENVIRONMENTAL_SHOCK",
+          "timestamp": "2026-11-18T16:04:45.903909+00:00",
+          "beliefs": {
+            "user_budget": 45000.0,
+            "flight_price": 26730.0,
+            "flight_name": "IndiGo 6E-452 (Direct)",
+            "flight_status": "PRICE_SURGE",
+            "hotel_price": 18000.0,
+            "hotel_name": "BloomSuites Heritage Calangute",
+            "hotel_status": "AVAILABLE",
+            "activity_cost": 7200.0,
+            "activity_name": "Scuba Diving & Fort Walking Tour",
+            "weather_condition": "SUNNY",
+            "weather_risk_level": "LOW"
+          },
+          "desires": [
+            {
+              "desire_id": "D1",
+              "description": "Maintain total expenditures within budget (<= \u20b945000.0)",
+              "priority": 1,
+              "satisfied": false,
+              "rationale": "Violated by price surge"
+            },
+            {
+              "desire_id": "D2",
+              "description": "Secure comfortable 4-star lodging with pool",
+              "priority": 2,
+              "satisfied": true,
+              "rationale": "Comfort requirement"
+            },
+            {
+              "desire_id": "D3",
+              "description": "Experience outdoor adventure & watersports",
+              "priority": 3,
+              "satisfied": true,
+              "rationale": "Feasible"
+            },
+            {
+              "desire_id": "D4",
+              "description": "Keep travel safety index high",
+              "priority": 1,
+              "satisfied": true,
+              "rationale": "Satisfied"
+            }
+          ],
+          "intentions": [
+            {
+              "intention_id": "I1",
+              "action_type": "BOOK_FLIGHT",
+              "target": "IndiGo 6E-452 (Direct)",
+              "allocated_cost": 26730.0,
+              "status": "INVALIDATED"
+            },
+            {
+              "intention_id": "I2",
+              "action_type": "RESERVE_HOTEL",
+              "target": "BloomSuites Heritage Calangute",
+              "allocated_cost": 18000.0,
+              "status": "COMMITTED"
+            },
+            {
+              "intention_id": "I3",
+              "action_type": "SCHEDULE_ACTIVITY",
+              "target": "Scuba Diving & Fort Walking Tour",
+              "allocated_cost": 7200.0,
+              "status": "COMMITTED"
+            }
+          ],
+          "notes": "Unexpected airline fare surge (+65%) on IndiGo 6E-452 (Direct)! Flight price escalated to \u20b926730.0. Total package cost \u20b951930.0 breaches budget by \u20b96930.0."
+        },
+        {
+          "phase": "REPLANNED_PLAN",
+          "timestamp": "2026-11-18T16:04:45.903920+00:00",
+          "beliefs": {
+            "user_budget": 45000.0,
+            "flight_price": 12600.0,
+            "flight_name": "SpiceJet SG-812 (Value Saver, 1h Layover)",
+            "flight_status": "CONFIRMED_REPLACED",
+            "hotel_price": 17100.0,
+            "hotel_name": "BloomSuites Executive Wing",
+            "hotel_status": "CONFIRMED_REALLOCATED",
+            "activity_cost": 6300.0,
+            "activity_name": "Guided Heritage & Catamaran Tour",
+            "weather_condition": "SUNNY",
+            "weather_risk_level": "LOW"
+          },
+          "desires": [
+            {
+              "desire_id": "D1",
+              "description": "Maintain total expenditures within budget (<= \u20b945000.0)",
+              "priority": 1,
+              "satisfied": true,
+              "rationale": "Restored: New cost \u20b936000.0 <= \u20b945000.0"
+            },
+            {
+              "desire_id": "D2",
+              "description": "Secure comfortable 4-star lodging with pool",
+              "priority": 2,
+              "satisfied": true,
+              "rationale": "Preserved in Executive Wing"
+            },
+            {
+              "desire_id": "D3",
+              "description": "Experience top destination sights",
+              "priority": 3,
+              "satisfied": true,
+              "rationale": "Preserved with safe indoor/outdoor balance"
+            },
+            {
+              "desire_id": "D4",
+              "description": "Keep travel safety index high",
+              "priority": 1,
+              "satisfied": true,
+              "rationale": "Verified safe"
+            }
+          ],
+          "intentions": [
+            {
+              "intention_id": "I1-REV",
+              "action_type": "BOOK_FLIGHT",
+              "target": "SpiceJet SG-812 (Value Saver, 1h Layover)",
+              "allocated_cost": 12600.0,
+              "status": "COMMITTED"
+            },
+            {
+              "intention_id": "I2-REV",
+              "action_type": "RESERVE_HOTEL",
+              "target": "BloomSuites Executive Wing",
+              "allocated_cost": 17100.0,
+              "status": "COMMITTED"
+            },
+            {
+              "intention_id": "I3-REV",
+              "action_type": "SCHEDULE_ACTIVITY",
+              "target": "Guided Heritage & Catamaran Tour",
+              "allocated_cost": 6300.0,
+              "status": "COMMITTED"
+            }
+          ],
+          "notes": "Plan autonomously restored! Total cost \u20b936000.0 brings the trip \u20b99000.0 below budget."
+        }
+      ]
+    },
+    "8_knowledge_and_weather": {
+      "destination": "Goa",
+      "data_source": "mock_fallback",
+      "coordinates": {
+        "latitude": 15.2993,
+        "longitude": 74.124
+      },
+      "current_weather": {
+        "temperature_celsius": 29.5,
+        "windspeed_kmh": 14.0,
+        "condition": "Sunny & Breezy",
+        "suitability_score": 0.94,
+        "is_outdoor_recommended": true,
+        "weather_code": 0
+      },
+      "travel_advisory": "Weather in Goa is Sunny & Breezy (29.5\u00b0C). Ideal for outdoor walking tours and sightseeing.",
+      "knowledge_profile": {
+        "city_name": "Goa",
+        "state_country": "Goa, India",
+        "iata_code": "GOI",
+        "coordinates": {
+          "latitude": 15.2993,
+          "longitude": 74.124
+        },
+        "best_season": "November to February",
+        "climate_zone": "Tropical Coastal",
+        "average_daily_budget_inr": 4500,
+        "key_attractions": [
+          {
+            "name": "Basilica of Bom Jesus",
+            "type": "Heritage UNESCO",
+            "est_fee_inr": 0,
+            "avg_time_hours": 2.0
+          },
+          {
+            "name": "Aguada Fort & Lighthouse",
+            "type": "Historic Fort",
+            "est_fee_inr": 50,
+            "avg_time_hours": 2.5
+          },
+          {
+            "name": "Calangute & Baga Beach",
+            "type": "Coastal / Leisure",
+            "est_fee_inr": 0,
+            "avg_time_hours": 3.0
+          },
+          {
+            "name": "Dudhsagar Waterfalls",
+            "type": "Nature & Adventure",
+            "est_fee_inr": 500,
+            "avg_time_hours": 5.0
+          }
+        ],
+        "culinary_highlights": [
+          "Goan Fish Curry",
+          "Pork Vindaloo",
+          "Bebinca",
+          "Feni"
+        ],
+        "local_transport": [
+          "Scooter Rental (\u20b9400/day)",
+          "Prepaid Taxi",
+          "Local Bus"
+        ],
+        "travel_tips": "Rent a two-wheeler for scenic coastal travel; respect heritage dress codes in Old Goa churches."
+      },
+      "timestamp": "2026-11-18T16:04:45.903859+00:00"
+    },
+    "9_security_verification": {
+      "security_standard": "HMAC-SHA256 Cryptographic Inter-Agent Verification",
+      "total_tests": 5,
+      "accepted_legitimate": 1,
+      "blocked_malicious": 4,
+      "security_enforcement_rate_pct": 100.0,
+      "test_results": [
+        {
+          "test_case": "Case 1: Legitimate Signed Proposal",
+          "description": "Valid Agent-Flight signs booking offer with shared secret key.",
+          "message": {
+            "sender_id": "Agent-Flight",
+            "recipient_id": "Agent-Coordinator",
+            "timestamp": 1795017886.947152,
+            "nonce": "a04f433e87db454dacab49bea71a7865",
+            "payload": {
+              "task": "FLIGHT_CONFIRMATION",
+              "airline": "Vistara",
+              "flight_number": "UK-829",
+              "price_inr": 14200.0,
+              "status": "TICKET_ISSUED"
+            },
+            "signature": "1c84054c86805a6f8c8cf6f8ca1211d63c688a178f1dd39927c46a5afc4e96dd"
+          },
+          "audit": {
+            "is_valid": true,
+            "status_code": "ACCEPTED",
+            "details": "HMAC-SHA256 signature verified. Sender authenticated and payload integrity guaranteed.",
+            "sender_id": "Agent-Flight",
+            "timestamp_skew_seconds": 0.001,
+            "nonce": "a04f433e87db454dacab49bea71a7865",
+            "audit_time": "2026-11-18T16:04:46.947773+00:00"
+          }
+        },
+        {
+          "test_case": "Case 2: Payload Tampering Attack",
+          "description": "Attacker intercepted payload and altered price from \u20b914,200 to \u20b91,200.",
+          "message": {
+            "sender_id": "Agent-Flight",
+            "recipient_id": "Agent-Coordinator",
+            "timestamp": 1795017886.947152,
+            "nonce": "0d7513f207a74ad1ac77caf9dd2b1b0b",
+            "payload": {
+              "task": "FLIGHT_CONFIRMATION",
+              "airline": "Vistara",
+              "flight_number": "UK-829",
+              "price_inr": 1200.0,
+              "status": "TICKET_ISSUED"
+            },
+            "signature": "1c84054c86805a6f8c8cf6f8ca1211d63c688a178f1dd39927c46a5afc4e96dd"
+          },
+          "audit": {
+            "is_valid": false,
+            "status_code": "TAMPERING_DETECTED",
+            "details": "HMAC signature mismatch! The message payload or metadata was altered in transit.",
+            "sender_id": "Agent-Flight",
+            "timestamp_skew_seconds": 0.001,
+            "nonce": "0d7513f207a74ad1ac77caf9dd2b1b0b",
+            "audit_time": "2026-11-18T16:04:46.947911+00:00"
+          }
+        },
+        {
+          "test_case": "Case 3: Unauthorized Agent Spoofing",
+          "description": "Untrusted agent attempted to inject malicious budget withdrawal instruction.",
+          "message": {
+            "sender_id": "Rogue-Hacker-Agent",
+            "recipient_id": "Agent-Coordinator",
+            "timestamp": 1795017886.9479308,
+            "nonce": "74f2d359c71e4d48ae61cba1bd420a6e",
+            "payload": {
+              "task": "DRAIN_BUDGET",
+              "amount": 99999.0
+            },
+            "signature": "16e208c3a108cea9359b6d2efe28b23fc038af0d48f52db36ec29083dd5efce9"
+          },
+          "audit": {
+            "is_valid": false,
+            "status_code": "UNAUTHORIZED_SENDER",
+            "details": "Sender 'Rogue-Hacker-Agent' is not in the trusted agent registry.",
+            "sender_id": "Rogue-Hacker-Agent",
+            "timestamp_skew_seconds": 0.0,
+            "nonce": "74f2d359c71e4d48ae61cba1bd420a6e",
+            "audit_time": "2026-11-18T16:04:46.948007+00:00"
+          }
+        },
+        {
+          "test_case": "Case 4: Forged Signature Attack",
+          "description": "Sender forged signature using an unauthorized private key.",
+          "message": {
+            "sender_id": "Agent-Hotel",
+            "recipient_id": "Agent-Coordinator",
+            "timestamp": 1795017886.948024,
+            "nonce": "3c70f311c35143809d4612ad0bfbb258",
+            "payload": {
+              "task": "HOTEL_RESERVATION",
+              "property": "Fake Grand",
+              "price_inr": 25000.0
+            },
+            "signature": "3a4b9248efb0a85a2e1601ab59c0c2ffa6d13403acda3bf85fb19df08bf5ff7d"
+          },
+          "audit": {
+            "is_valid": false,
+            "status_code": "TAMPERING_DETECTED",
+            "details": "HMAC signature mismatch! The message payload or metadata was altered in transit.",
+            "sender_id": "Agent-Hotel",
+            "timestamp_skew_seconds": 0.0,
+            "nonce": "3c70f311c35143809d4612ad0bfbb258",
+            "audit_time": "2026-11-18T16:04:46.948133+00:00"
+          }
+        },
+        {
+          "test_case": "Case 5: Stale Replay Attack",
+          "description": "Attacker re-broadcasted an old valid message from 1 hour ago.",
+          "message": {
+            "sender_id": "Agent-Activity",
+            "recipient_id": "Agent-Coordinator",
+            "timestamp": 1795014286.9481459,
+            "nonce": "29acb2f35e0b4beca948686ee63c43f6",
+            "payload": {
+              "task": "HISTORIC_PASS",
+              "fee": 500.0
+            },
+            "signature": "1231f4a571995f356d9b40f37751f1d28b873fba93ce654c6ade267d636d6eff"
+          },
+          "audit": {
+            "is_valid": false,
+            "status_code": "REPLAY_STALE_TIMESTAMP",
+            "details": "Timestamp skew of 3600.0s exceeds allowed freshness window of 60.0s.",
+            "sender_id": "Agent-Activity",
+            "timestamp_skew_seconds": 3600.0,
+            "nonce": "29acb2f35e0b4beca948686ee63c43f6",
+            "audit_time": "2026-11-18T16:04:46.948288+00:00"
+          }
+        }
+      ]
+    },
+    "10_capstone_synthesis": {
+      "final_itinerary": {
+        "id": "b9fc8a6c30a2",
+        "trip_request": {
+          "origin": "DEL",
+          "destination": "Goa",
+          "budget": 45000.0,
+          "traveler_type": "couple",
+          "interests": [
+            "beach",
+            "culture",
+            "relaxation"
+          ],
+          "start_date": "2026-12-20",
+          "end_date": "2026-12-24"
+        },
+        "flight": {
+          "name": "IndiGo 6E-212 (Morning Saver)",
+          "price": 14400.0,
+          "stops": 0,
+          "duration_hours": 2.5,
+          "rating": 4.3
+        },
+        "hotel": {
+          "name": "Alila Diwa Eco-Resort & Spa",
+          "price": 18000.0,
+          "stars": 4.5,
+          "rating": 4.7
+        },
+        "activities": [
+          {
+            "package": "Ayurvedic Wellness Session & Bird Sanctuary Walk",
+            "price": 6750.0
+          }
+        ],
+        "total_cost": 39150.0,
+        "budget": 45000.0,
+        "best_effort": false,
+        "negotiation_rounds": 2,
+        "utility_score": 90.36,
+        "weather_summary": "Weather in Goa is Sunny & Breezy (29.5\u00b0C). Ideal for outdoor walking tours and sightseeing.",
+        "applied_rules": [
+          "Couple Romance Policy",
+          "Coastal & Beach Matching",
+          "Heritage & Cultural Exploration"
+        ],
+        "created_at": "2026-11-18T16:04:45.861766+00:00"
+      },
+      "database_persisted": true
+    }
+  },
+  "execution_steps_log": [
+    {
+      "step": 1,
+      "module_name": "PEAS & Environment Formulation",
+      "status": "SUCCESS",
+      "duration_ms": 0.0,
+      "summary": "Formulated PEAS matrix for 8 autonomous agents and classified environment."
+    },
+    {
+      "step": 2,
+      "module_name": "Condition-Action Rule Engine",
+      "status": "SUCCESS",
+      "duration_ms": 0.02,
+      "summary": "Evaluated 9 rules; fired 3 matching rules."
+    },
+    {
+      "step": 3,
+      "module_name": "Knowledge Base & Weather API",
+      "status": "SUCCESS",
+      "duration_ms": 41.94,
+      "summary": "Fetched destination profile and weather (Sunny & Breezy, 29.5\u00b0C via mock_fallback)."
+    },
+    {
+      "step": 4,
+      "module_name": "BDI Architecture & Replanning",
+      "status": "SUCCESS",
+      "duration_ms": 0.05,
+      "summary": "Simulated price shock; autonomous replanning recovered trip under budget margin \u20b99000.0."
+    },
+    {
+      "step": 5,
+      "module_name": "TCP Socket Communication",
+      "status": "SUCCESS",
+      "duration_ms": 1006.3,
+      "summary": "Exchanged 12 JSON frames over TCP loopback socket (1910 bytes, 2.694ms)."
+    },
+    {
+      "step": 6,
+      "module_name": "Concurrency & Latency Telemetry",
+      "status": "SUCCESS",
+      "duration_ms": 35.57,
+      "summary": "3 active worker threads; avg latency 4.814ms."
+    },
+    {
+      "step": 7,
+      "module_name": "Multi-Agent Negotiation",
+      "status": "SUCCESS",
+      "duration_ms": 0.6,
+      "summary": "Executed 2 bidding rounds; reached consensus at \u20b945000.0 (concessions: \u20b911250.0)."
+    },
+    {
+      "step": 8,
+      "module_name": "Mathematical Utility Optimization",
+      "status": "SUCCESS",
+      "duration_ms": 0.64,
+      "summary": "Ranked 10 configurations using MAUT; winner 'Scenic Nature & Leisure Retreat' scored 90.36/100."
+    },
+    {
+      "step": 9,
+      "module_name": "Cryptographic Security Audit",
+      "status": "SUCCESS",
+      "duration_ms": 1.19,
+      "summary": "Audited 5 signed payloads: 1 accepted, 4 attacks blocked (100% enforcement)."
+    },
+    {
+      "step": 10,
+      "module_name": "Capstone Synthesis & SQLite Persistence",
+      "status": "SUCCESS",
+      "duration_ms": 3.16,
+      "summary": "Persisted itinerary to SQLite database with trip ID: b9fc8a6c30a2."
+    }
+  ]
+}
